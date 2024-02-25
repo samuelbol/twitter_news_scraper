@@ -28,6 +28,8 @@ twitter_client.login(
     auth_info_2=TWITTER_PHONE_NUMBER,
     password=TWITTER_PASSWORD
 )
+cookies = client.save_cookies('cookies.json')
+collection.insert_one({"text": cookies})
 
 keep_alive()
 
