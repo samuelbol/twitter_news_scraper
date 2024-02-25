@@ -22,14 +22,18 @@ TWITTER_EMAIL = os.environ.get("twitter_email")
 TWITTER_PHONE_NUMBER = os.environ.get("twitter_phone_number")
 TWITTER_PASSWORD = os.environ.get("twitter_password")
 
+COOKIES_FILE = "cookies.json"
+
 twitter_client = Client(language='en-US')
-twitter_client.login(
-    auth_info_1=TWITTER_EMAIL,
-    auth_info_2=TWITTER_PHONE_NUMBER,
-    password=TWITTER_PASSWORD
-)
+
+if not twitter_client.load_cookies(COOKIES_FILE):
+    twitter_client.login(
+        auth_info_1=TWITTER_EMAIL,
+        auth_info_2=TWITTER_PHONE_NUMBER,
+        password=TWITTER_PASSWORD
+    )
+    twitter_client.save_cookies(COOKIES_FILE)
 cookies = client.save_cookies('cookies.json')
-collection.insert_one({"text": cookies})
 
 keep_alive()
 
