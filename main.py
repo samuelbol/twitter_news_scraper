@@ -37,7 +37,7 @@ def get_tweets_info():
     twitter_user = twitter_client.get_user_by_screen_name(twitter_screen_name)
     twitter_user_id = twitter_user.id  # 4504718963
 
-    tweets = twitter_client.get_user_tweets(twitter_user_id, 'Tweets', count=10)
+    tweets = twitter_client.get_user_tweets(twitter_user_id, 'Tweets', count=5)
 
     tweets_info_list = []
 
@@ -107,6 +107,6 @@ def main():
 
 nigerian_tz = pytz.timezone("Africa/Lagos")
 scheduler = BlockingScheduler(timezone=nigerian_tz)
-# scheduler.add_job(main, "interval", minutes=20, coalesce=True)
+scheduler.add_job(main, "interval", minutes=20, coalesce=True)
 
-main()
+# main()
