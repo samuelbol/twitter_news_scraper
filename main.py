@@ -21,29 +21,43 @@ TELEGRAM_BASE_URL = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/"
 TWITTER_EMAIL = os.environ.get("twitter_email")
 TWITTER_PHONE_NUMBER = os.environ.get("twitter_phone_number")
 TWITTER_PASSWORD = os.environ.get("twitter_password")
-
 COOKIES_FILE = "cookies.json"
 
-twitter_client = Client(language='en-US')
+keep_alive()
 
-if not twitter_client.load_cookies(COOKIES_FILE):
+try:
+    with open(COOKIES_FILE, 'r') as file:
+        cookies_data = json.load(file)
+except FileNotFoundError:
+    cookies_data = None
+
+twitter_client = Client(language='en-US', cookies=cookies_data)
+
+def login_and_save_cookies():
     twitter_client.login(
         auth_info_1=TWITTER_EMAIL,
         auth_info_2=TWITTER_PHONE_NUMBER,
         password=TWITTER_PASSWORD
     )
-    twitter_client.save_cookies(COOKIES_FILE)
-cookies = client.save_cookies('cookies.json')
-
-keep_alive()
+    with open(COOKIES_FILE, 'w') as file:
+        json.dump(twitter_client.get_cookies(), file)
 
 
 def get_tweets_info():
     twitter_screen_name = 'AbsoluteChelsea'
-    twitter_user = twitter_client.get_user_by_screen_name(twitter_screen_name)
+    
+    try:
+        twitter_user = twitter_client.get_user_by_screen_name(twitter_screen_name)
+    except twikit.errors.TooManyRequests as e:
+        print(f"Rate limit exceeded. Waiting for {e.retry_after} seconds.")
+        time.sleep(e.retry_after)
+        login_and_save_cookies()
+        twitter_user = twitter_client.get_user_by_screen_name(twitter_screen_name)
+
     twitter_user_id = twitter_user.id  # 4504718963
 
-    tweets = twitter_client.get_user_tweets(twitter_user_id, 'Tweets', count=5)
+    tweets = twitter_client.get_user_tweets(twitter_user_id, 'Tweets', count=10)
+    print(len(tweets))
 
     tweets_info_list = []
 
@@ -114,5 +128,6 @@ def main():
 nigerian_tz = pytz.timezone("Africa/Lagos")
 scheduler = BlockingScheduler(timezone=nigerian_tz)
 scheduler.add_job(main, "interval", minutes=20, coalesce=True)
+# scheduler.start()
 
-# main()
+main()
