@@ -89,7 +89,7 @@ def send_tweets_to_telegram(tweet_items):
 
         telegram_message = f"🚨 {tweet_text}\n\n" \
                            f"📲 @JustCFC"
-        # print(telegram_message)
+        print(telegram_message)
 
         saved_texts = collection.find_one({"text": tweet_text})
         if saved_texts:
@@ -129,6 +129,6 @@ def main():
 nigerian_tz = pytz.timezone("Africa/Lagos")
 scheduler = BlockingScheduler(timezone=nigerian_tz)
 scheduler.add_job(main, "interval", minutes=30, coalesce=True)
-scheduler.start()
+# scheduler.start()
 
-# main()
+main()
