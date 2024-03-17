@@ -128,7 +128,7 @@ def main():
 
 nigerian_tz = pytz.timezone("Africa/Lagos")
 scheduler = BlockingScheduler(timezone=nigerian_tz)
-scheduler.add_job(main, "interval", minutes=30, coalesce=True)
-scheduler.start()
+scheduler.add_job(main, "interval", hours=2, coalesce=True)
+# scheduler.start()
 
-# main()
+main()
